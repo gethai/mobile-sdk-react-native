@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.core.RCTNativeAppEventEmitter;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -88,8 +89,8 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
         Refiner.INSTANCE.attachToResponse(contextualDataMap);
     }
 
-    private void sendEvent(String eventName, @Nullable WritableMap params) {
-		getReactApplicationContext().getJSModule(RCTNativeAppEventEmitter.class).emit(eventName, params);
+    private void sendEvent(String eventName) {
+        getReactApplicationContext().getJSModule(RCTNativeAppEventEmitter.class).emit(eventName, null);
 	}
 
     private void registerCallback(){
@@ -97,7 +98,7 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
             @Override
             public Unit invoke(String s, Object o) {
                 Log.d(LOG_TAG, "Invoked onBeforeShow");
-                this.sendEvent("onBeforeShow", null);
+                sendEvent("onBeforeShow");
                 return null;
             }
         });
@@ -106,7 +107,7 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
             @Override
             public Unit invoke(Object o) {
                 Log.d(LOG_TAG, "Invoked onShow");
-                this.sendEvent("onShow", null);
+                sendEvent("onShow");
                 return null;
             }
         });
@@ -115,7 +116,7 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
             @Override
             public Unit invoke(Object o) {
                 Log.d(LOG_TAG, "Invoked onClose");
-                this.sendEvent("onClose", null);
+                sendEvent("onClose");
                 return null;
             }
         });
@@ -124,7 +125,7 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
             @Override
             public Unit invoke(Object o, Object o2) {
                 Log.d(LOG_TAG, "Invoked onComplete");
-                this.sendEvent("onComplete", null);
+                sendEvent("onComplete");
                 return null;
             }
         });
