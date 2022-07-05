@@ -13,8 +13,15 @@ import io.refiner.Refiner;
 import io.refiner.RefinerConfigs;
 import io.refiner.rn.utils.MapUtil;
 
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
+
+import android.util.Log;
+
 public class RNRefinerModule extends ReactContextBaseJavaModule {
 
+    public static final String LOG_TAG = "ReactNativeRefiner";
     private final ReactApplicationContext reactContext;
 
     public RNRefinerModule(ReactApplicationContext reactContext) {
@@ -81,20 +88,25 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
         Refiner.INSTANCE.attachToResponse(contextualDataMap);
     }
 
+    private void sendEvent(String eventName, @Nullable WritableMap params) {
+		getReactApplicationContext().getJSModule(RCTNativeAppEventEmitter.class).emit(eventName, params);
+	}
+
     private void registerCallback(){
-        System.out.println("registerCallback.....");
-        Refiner.INSTANCE.onShow(new Function1<Object, Unit>() {
+        Refiner.INSTANCE.onBeforeShow(new Function2<String, Object, Unit>() {
             @Override
-            public Unit invoke(Object o) {
-                System.out.println("onShow....." + o);
+            public Unit invoke(String s, Object o) {
+                Log.d(LOG_TAG, "Invoked onBeforeShow");
+                this.sendEvent("onBeforeShow", null);
                 return null;
             }
         });
 
-        Refiner.INSTANCE.onDismiss(new Function1<Object, Unit>() {
+        Refiner.INSTANCE.onShow(new Function1<Object, Unit>() {
             @Override
             public Unit invoke(Object o) {
-                System.out.println("onDismiss..... " + o);
+                Log.d(LOG_TAG, "Invoked onShow");
+                this.sendEvent("onShow", null);
                 return null;
             }
         });
@@ -102,7 +114,8 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
         Refiner.INSTANCE.onClose(new Function1<Object, Unit>() {
             @Override
             public Unit invoke(Object o) {
-                System.out.println("onClose..... " + o);
+                Log.d(LOG_TAG, "Invoked onClose");
+                this.sendEvent("onClose", null);
                 return null;
             }
         });
@@ -110,8 +123,8 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
         Refiner.INSTANCE.onComplete(new Function2<Object, Object, Unit>() {
             @Override
             public Unit invoke(Object o, Object o2) {
-                System.out.println("onComplete..... o" + o);
-                System.out.println("onComplete..... o2" + o2);
+                Log.d(LOG_TAG, "Invoked onComplete");
+                this.sendEvent("onComplete", null);
                 return null;
             }
         });
