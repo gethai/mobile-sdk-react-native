@@ -1,10 +1,11 @@
 
 #import "RNRefiner.h"
 #import <RefinerSDK/RefinerSDK-Swift.h>
-#import "RefinerEventEmitter.h"
 @import RefinerSDK;
 
 @implementation RNRefiner
+
+bool shouldEmit;
 
 - (dispatch_queue_t)methodQueue
 {
@@ -49,23 +50,42 @@ RCT_EXPORT_METHOD(attachToResponse:(NSDictionary *)contextualData)
     [[Refiner instance] attachToResponseWithData: contextualData];
 }
 
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[ @"onShow", @"onBeforeShow", @"onClose", @"onComplete"];
+}
+
+- (void)startObserving
+{
+  shouldEmit = YES;
+}
+
+- (void)stopObserving
+{
+  shouldEmit = NO;
+}
+
 -(void)registerCallback {
     NSLog(@"Refiner registerCallback***********");
-    Refiner.instance.onShow = ^(NSString *formId) {
-        NSLog(@"Refiner onshow*********** %@", formId);
-        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: false];
+    Refiner.instance.onBeforeShow = ^(NSString *formId, NSObject* formConfig) {
+        NSLog(@"Refiner onBeforeShow*********** %@", formId);
+        if(shouldEmit)
+            [self sendEventWithName:@"onBeforeShow" body:@{}]; 
     };
-    Refiner.instance.onDismiss = ^(NSString *formId) {
-        NSLog(@"Refiner onDismiss*********** %@", formId);
-        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: true];
+    Refiner.instance.onShow = ^(NSString *formId) {
+        NSLog(@"Refiner onShow*********** %@", formId);
+        if(shouldEmit)
+            [self sendEventWithName:@"onShow" body:@{}];
     };
     Refiner.instance.onClose = ^(NSString *formId) {
         NSLog(@"Refiner onClose*********** %@", formId);
-        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: true];
+        if(shouldEmit)
+            [self sendEventWithName:@"onClose" body:@{}];
     };
     Refiner.instance.onComplete = ^(NSString *formId, NSString *formData) {
         NSLog(@"Refiner onComplete*********** %@  %@", formId, formData);
-        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: true];
+        if(shouldEmit)
+            [self sendEventWithName:@"onComplete" body:@{}];
     };
 }
 @end
