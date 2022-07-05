@@ -31,6 +31,7 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
     public void initialize(String projectId) {
         if (projectId != null) {
             Refiner.INSTANCE.initialize(reactContext, new RefinerConfigs(projectId));
+            this.registerCallback();
         }
     }
 
@@ -78,5 +79,41 @@ public class RNRefinerModule extends ReactContextBaseJavaModule {
             contextualDataMap = new HashMap<>(MapUtil.toMap(contextualData));
         }
         Refiner.INSTANCE.attachToResponse(contextualDataMap);
+    }
+
+    private void registerCallback(){
+        System.out.println("registerCallback.....");
+        Refiner.INSTANCE.onShow(new Function1<Object, Unit>() {
+            @Override
+            public Unit invoke(Object o) {
+                System.out.println("onShow....." + o);
+                return null;
+            }
+        });
+
+        Refiner.INSTANCE.onDismiss(new Function1<Object, Unit>() {
+            @Override
+            public Unit invoke(Object o) {
+                System.out.println("onDismiss..... " + o);
+                return null;
+            }
+        });
+
+        Refiner.INSTANCE.onClose(new Function1<Object, Unit>() {
+            @Override
+            public Unit invoke(Object o) {
+                System.out.println("onClose..... " + o);
+                return null;
+            }
+        });
+
+        Refiner.INSTANCE.onComplete(new Function2<Object, Object, Unit>() {
+            @Override
+            public Unit invoke(Object o, Object o2) {
+                System.out.println("onComplete..... o" + o);
+                System.out.println("onComplete..... o2" + o2);
+                return null;
+            }
+        });
     }
 }

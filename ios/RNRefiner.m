@@ -1,6 +1,8 @@
 
 #import "RNRefiner.h"
 #import <RefinerSDK/RefinerSDK-Swift.h>
+#import "RefinerEventEmitter.h"
+@import RefinerSDK;
 
 @implementation RNRefiner
 
@@ -14,6 +16,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(initialize:(NSString *)projectId)
 {
     [[Refiner instance] initializeWithProjectId: projectId];
+    [self registerCallback];
 }
 
 RCT_EXPORT_METHOD(identifyUser:(NSString *)userId withUserTraits:(NSDictionary *)userTraits withLocale:(NSString *)locale)
@@ -46,4 +49,23 @@ RCT_EXPORT_METHOD(attachToResponse:(NSDictionary *)contextualData)
     [[Refiner instance] attachToResponseWithData: contextualData];
 }
 
+-(void)registerCallback {
+    NSLog(@"Refiner registerCallback***********");
+    Refiner.instance.onShow = ^(NSString *formId) {
+        NSLog(@"Refiner onshow*********** %@", formId);
+        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: false];
+    };
+    Refiner.instance.onDismiss = ^(NSString *formId) {
+        NSLog(@"Refiner onDismiss*********** %@", formId);
+        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: true];
+    };
+    Refiner.instance.onClose = ^(NSString *formId) {
+        NSLog(@"Refiner onClose*********** %@", formId);
+        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: true];
+    };
+    Refiner.instance.onComplete = ^(NSString *formId, NSString *formData) {
+        NSLog(@"Refiner onComplete*********** %@  %@", formId, formData);
+        [[self.bridge moduleForClass:[RefinerEventEmitter class]] modalDismissed: true];
+    };
+}
 @end
