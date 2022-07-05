@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "Official React Native wrapper for the Refiner.io Mobile SDK",
   "homepage": "https://github.com/refiner-io/mobile-sdk-react-native",
-  "bugs": "https://github.com/gethai/shared",
+  "repository":"https://github.com/gethai/shared",
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
+  },
   "private": false,
   "peerDependencies": {
     "react-native": "^0.68.1"
